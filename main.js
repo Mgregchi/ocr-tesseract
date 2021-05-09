@@ -21,11 +21,11 @@ var streaming = false;
 
 
 function begin(a) {
-  let constraints = {video: true,
+  let constraints = {video:{
     facingMode: {
       exact: "environment"
     }
-  };
+  }};
 
   resetbutton = document.getElementById("resetbutton");
   if (navigator.mediaDevices.getUserMedia) {
