@@ -18,16 +18,18 @@ var resetbutton = null;
 //var playing = true;
 state = {"mode":begin, "bool": false};
 var streaming = false;
-var constrain = {video:
-  facingMode: {
-    exact: "environment"
-  }
-}
+
 
 function begin(a) {
+  let constraints = {video: true,
+    facingMode: {
+      exact: "environment"
+    }
+  };
+
   resetbutton = document.getElementById("resetbutton");
   if (navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia(constrain)
+    navigator.mediaDevices.getUserMedia(constraints)
       .then(function (stream) {
         video.srcObject = stream;
         video.play();
