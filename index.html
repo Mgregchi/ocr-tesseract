@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>OCR Camera test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+    <meta name="keywords" content="Mgregchi"/>
+    <meta name="description" content=""/>
+    <meta name="author" content="Mgregchi"/>
+    <!--tesseract: v2-->
+    <script async src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js' onload="tReady()"></script>
+
+</head>
+
+    <body>
+        <div>
+            <p>JUST A POC</p>
+            <p>STATUS : <span id="status"></span></p>
+            <p>RESULT : <span id="result"></span></p>
+
+        </div>
+
+        <div class="contentarea">
+            <h1>
+              MgregChi - Onwa: POC
+            </h1>
+            <p>
+              BARE, First phase demostration.
+            </p>
+            <li>Click start button</li>
+            <li>Face camer to text to capture</li>
+            <li>Click capture and wait for result</li>
+            <h5> Moble camera is better</h5>
+            <div class="camera">
+              <video id="video">Video stream not available.</video>
+              <button id="takePic">Take photo</button>
+              <button id="resetbutton">Rest</button> 
+              <h5>Stop & start Webcam Stream</h5>
+              
+              <button id="start">Start</button>
+      
+            </div>
+            <canvas id="canvas">
+            </canvas>
+            <div class="output">
+              <img id="photo" src="" > 
+            </div>
+            <p id="notify"></p>
+        
+        </div>
+        
+        <script>
+            function tReady() {
+                status.innerHTML = 'load completed.';
+            }            
+        </script>
+        <script src="main.js"></script>
+    </body>
+</html>
