@@ -1,59 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>OCR Camera test</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
-    <meta name="keywords" content="Mgregchi"/>
-    <meta name="description" content=""/>
-    <meta name="author" content="Mgregchi"/>
-    <!--tesseract: v2-->
-    <script async src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js' onload="tReady()"></script>
+  <head>
+      <title>Camera test</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+      <meta name="keywords" content="YMgregchi"/>
+      <meta name="description" content=""/>
+      <meta name="author" content="Mgregchi"/>
 
-</head>
-
-    <body>
-        <div>
-            <p>JUST A POC</p>
-            <p>STATUS : <span id="status"></span></p>
-            <p>RESULT : <span id="result"></span></p>
-
-        </div>
-
-        <div class="contentarea">
-            <h1>
-              MgregChi - Onwa: POC
-            </h1>
-            <p>
-              BARE, First phase demostration.
-            </p>
-            <li>Click start button</li>
-            <li>Face camer to text to capture</li>
-            <li>Click capture and wait for result</li>
-            <h5> Moble camera is better</h5>
-            <div class="camera">
-              <video id="video">Video stream not available.</video>
-              <button id="takePic">Take photo</button>
-              <button id="resetbutton">Rest</button> 
-              <h5>Stop & start Webcam Stream</h5>
-              
-              <button id="start">Start</button>
+      <!--tesseract: v2-->
+      <script async src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js' onload="tReady()"></script>
+      <!--script src="jquery-3.5.1.min.js"></script-->
       
+      <!-- MDB -->
+      <script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"
+      ></script>
+      <!--script src="mdb.min.js"></script-->
+      <!-- Font Awesome -->
+      <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        rel="stylesheet"
+      />
+      <!-- Google Fonts -->
+      <link
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        rel="stylesheet"
+      />
+      <!-- MDB -->
+      <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.css"
+        rel="stylesheet"
+      />    
+      <!--link href="mdb.min.css" rel="stylesheet"/-->
+
+  </head>
+
+<style>
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+  body{
+    background-color: black;
+  }
+  button{
+    color: rgb(157, 23, 235);
+  }
+#res {
+  color: tomato;
+  
+}
+
+
+/* Designing dialog box */
+#alert {
+    display: none;
+
+  }
+    
+
+
+</style>
+    <body>
+      
+      <div class="fixed-bottom p-4 m-4" id="alert">
+        <div class="message note text-warning" id="notify">
+            Camera permission:<br> Accept 
+            Camera permission.</div>
+        <button class="btn btn-primary yes">Okay</button>
+      </div>      
+        <div class="container justify-content-center">
+          <hr class="divider my-4" />
+
+            <div>
+
+              <h1>
+                MgregChi - Onwa: POC
+              </h1>
+              <br>
+
+              <p class="note p-4">
+                BARE, First phase demostration.
+              </p>
+
+              <!--p>STATUS : <span id="status"></span></p-->
+              <p id="res"> <span id="proc"></span></p>
+              <!-- The text field -->
+              <!--input type="text" value="result text will appear here" id="result"-->
+              <!--input id="result"><span>result will appear here</span></input-->
+              <p id="res"> <span id="proc"></span></p>
+
+              <div class="form-outline-primary input-group mb-3 text-center">
+                <div id="textForm">
+
+                  <textarea class="form-control text-primary" hidden id="result" rows="4"></textarea>
+                  <label class="form-label" for="result">Result will appear here</label>
+                  <!-- The button used to copy the text -->
+                </div>
+                <div class="input-group mb-3">
+                  <button type="button" class="btn btn-outline-primary">Translate</button>
+                  <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                    data-mdb-toggle="dropdown" aria-expanded="false"
+                    data-mdb-toggle="tooltip"
+                    data-mdb-placement="top"
+                    title="Select target lang"                    
+                    >
+                    <span>From</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    <li>
+                      <hr class="dropdown-divider" />
+                    </li>
+                    <li><a class="dropdown-item" href="#">Separated link</a></li>
+                  </ul>
+
+                  <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                  data-mdb-toggle="dropdown" aria-expanded="false"
+                  data-mdb-toggle="tooltip"
+                  data-mdb-placement="top"
+                  title="Select target lang"                    
+                  >
+                  <span>From</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    <li>
+                      <hr class="dropdown-divider" />
+                    </li>
+                    <li><a class="dropdown-item" href="#">Separated link</a></li>
+                  </ul>
+
+                </div>                
+              </div>
+              <button class="btn btn-success disabled mb-3" aria-disabled="true" id="copyBtn">Copy text</button>
+              <button class="btn btn-success mb-3 disabled id="transBtn">Translate</button>             
             </div>
-            <canvas id="canvas">
-            </canvas>
-            <div class="output">
-              <img id="photo" src="" > 
+            <br>
+            <div class="fixed-action-btn">
+
+              <a
+              class="btn btn-outline-primary btn-rounded text-center"
+              data-mdb-toggle="tooltip"
+              data-mdb-placement="top"
+              title="Click to open Camera"              
+              ><i class="fas" id="start">Start</i
+            ></a>  
+              <ul class="list-unstyled">
+                <li>
+                  <a
+                    class="btn btn-primary btn-floating btn-lg"
+                    style="background-color: #f44336"
+                    ><i class="fas fa-star"></i
+                  ></a>
+                </li>
+                <li>
+                  <a
+                  class="btn btn-floating btn-primary btn-lg"
+                  style="background-color: #f44336"
+                >
+                  <i class="fas fa-pencil-alt"></i>
+                  </a>                  
+                </li>
+
+                <li>
+                  <a
+                    class="btn btn-primary btn-floating btn-lg"
+                    style="background-color: #fdd835"
+                    ><i class="fas fa-user"></i
+                  ></a>
+                </li>
+                <li>
+                  <a
+                    class="btn btn-primary btn-floating btn-lg"
+                    style="background-color: #4caf50"
+                    ><i class="fas fa-envelope"></i
+                  ></a>
+                </li>
+                <li>
+                  <a
+                    class="btn btn-primary btn-floating btn-lg"
+                    style="background-color: #2196f3"
+                    ><i class="fas fa-shopping-cart"></i
+                  ></a>
+                </li>
+              </ul>
             </div>
-            <p id="notify"></p>
-        
+          
+          <div class="contentarea">
+              <canvas id="canvas" width="0" height="0"></canvas>
+
+              <video id="video" width="0" height="0">Video stream not available.</video>
+              <div class="card-footer">
+                <button class="btn btn-dark disabled" id="takePic">Capture</button>
+                <button class="btn btn-dark disabled" id="resetbutton">Reset</button> 
+                
+                <!--button class="btn btn-primary" id="start">Start</button-->
+              </div>
+              <!-- Default switch -->
+              <div class="form-check form-switch p-4 m-4">
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                <label class="form-check-label" for="flexSwitchCheckDefault"
+                  >Translate on Capture</label
+                >
+              </div>
+
+              <!--div class="output">
+                <img id="photo" src="" > 
+              </div-->
+              <!--p class="fixed-top p-4 text-warning m-4" id="notify"></p-->
+              <p class="fixed-top p-4 note text-success m-1" id="status"><span>Please wait...</span></p>
+         
+          </div>
         </div>
-        
         <script>
             function tReady() {
-                status.innerHTML = 'load completed.';
+                status.innerHTML = 'Loading completed. Now ready to use.';
             }            
         </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"><!/script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>        
         <script src="main.js"></script>
-    </body>
+
+      </body>
 </html>

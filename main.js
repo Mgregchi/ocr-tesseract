@@ -1,7 +1,7 @@
 //import Tesseract from 'tesseract.js';
 const status = document.querySelector('#status');
-const result = document.querySelector("#result")
-
+const result = document.querySelector("#result");
+var textForm = document.getElementById("textForm");
 var canvas = document.getElementById('canvas');
 var width = 320;    // We will scale the photo width to this
 var height = 0;     // This will be computed based on the input stream
@@ -12,22 +12,28 @@ var photo = document.getElementById('photo');
 
 //var stopVideo = document.querySelector("#stop");
 var startVid = document.querySelector("#start");
-var takePic = document.getElementById('takePic');
-var resetbutton = null;
+//var takePic = document.getElementById('takePic');
+var takePic = $("#takePic");
+var resetbutton = $("#resetbutton");
 //var paused = false;
 //var playing = true;
 state = {"mode":begin, "bool": false};
 var streaming = false;
-
+var hid = false;
 
 function begin(a) {
-  let constraints = {video:{
+  takePic.removeClass("disabled");
+  resetbutton.removeClass("disabled");
+  if(hid === true) video.removeAttribute("hidden");// Skip hidden elements  
+  let constraints = {video:true/*{
     facingMode: {
       exact: "environment"
     }
-  }};
+  }*/};
 
-  resetbutton = document.getElementById("resetbutton");
+  notify.innerHTML = "";
+  //resetbutton = document.getElementById("resetbutton");
+
   if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia(constraints)
       .then(function (stream) {
@@ -35,8 +41,16 @@ function begin(a) {
         video.play();
       })
       .catch(function (error) {
-        console.log("Something went wrong! "+ error);
-        notify.innerHTML="Oops! You must accept camera permission ";
+        //const OverconstrainedError
+        
+        //console.log("Something went wrong! "+ error);
+        var conError = error.name.toString()
+        //console.log(conError==="OverconstrainedError");
+        if(conError === "OverconstrainedError") notify.innerHTML="Use mobile device";// console.log("No environ");
+        else(notify.innerHTML="Oops! You must accept camera permission ");
+        /* Alert the copied text */
+        //alert("Oops! You must accept camera permission ");
+        errAlert();       
         reset(begin,false,"start")
       
       });
@@ -55,22 +69,27 @@ function begin(a) {
         
         video.setAttribute('width', width);
         video.setAttribute('height', height);
-        canvas.setAttribute('width', width);
-        canvas.setAttribute('height', height);
         streaming = true;
         
         }
   }, false);
+  /*
   takePic.addEventListener('click', function(ev){
       takepicture();
       ev.preventDefault();
   }, false);
-    
-  resetbutton.addEventListener("click", function(ev){
+  */
+
+  takePic.click(function(){
+    //console.log("TAKEPIC");
+    takepicture();
+  });
+
+  resetbutton.click(function(){
       clearphoto();
   });
 
-  clearphoto();       
+  //clearphoto();       
 
 }
 
@@ -107,7 +126,9 @@ startVid.onclick = function(){
 function reset(mode,bool,rText) {
   state.mode = mode
   state.bool = bool
-  startVid.innerHTML = rText;      
+  startVid.innerHTML = rText;
+  if(hid === true) video.removeAttribute("hidden");// Skip hidden elements  
+
 }
 
 function stop(e) {
@@ -119,16 +140,29 @@ function stop(e) {
     var track = tracks[i];
     track.stop();
   }
-  video.srcObject = null;      
+  video.srcObject = null;
+  canvas.setAttribute("src", null);
+  /*
+  video.setAttribute('width', 0);
+  video.setAttribute('height', 0);
+  canvas.setAttribute('width', 0);
+  canvas.setAttribute('height', 0);
+  */
+  takePic.addClass("disabled");
+  resetbutton.addClass("disabled");
 }
 
 function clearphoto() {
   var context = canvas.getContext('2d');
-  context.fillStyle = "#AAA";
+  context.fillStyle = "#000000";
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   var data = canvas.toDataURL('image/png');
-  photo.setAttribute('src', null);//data
+  canvas.width = 0;
+  canvas.height = 0;
+  //photo.setAttribute('src', null);//data
+  // Hide video
+  video.removeAttribute("hidden");
 }
 
 function takepicture() {
@@ -142,15 +176,41 @@ function takepicture() {
     //console.log("UNCHANGED ", data)
     // Attempt to send the data to server
     // then put the response as src
-    recog(data)
+    video.setAttribute("hidden", true);
+    hid = true;
+    console.log("UNDER")
+    recog(data);
+
 
   } else {
     clearphoto();
   }
 }    
 
+
+
+var copyBtn = document.getElementById("copyBtn");
+copyBtn.onclick = textCopy;
+function textCopy() {
+  
+  /* Get the text field */
+  var copyText = document.getElementById("result");
+
+  /* Select the text field */
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+  notify.innerHTML="Copied the text: " + copyText.value;
+  /* Alert the copied text */
+  //alert("Copied the text: " + copyText.value);
+  errAlert();
+}
+
 function recog(img) {
-  result.textContent = "Loading...";
+  var proc = document.getElementById("proc");
+  //copyBtn.removeAttribute(copyBtn.className.search("disabled"), '');
 
   Tesseract.recognize(
     img,//'https://tesseract.projectnaptha.com/img/eng_bw.png',
@@ -161,10 +221,14 @@ function recog(img) {
     console.log(text);
   })
   */
-    { logger:m=> result.textContent =m.status}
+    { logger:m=> proc.textContent =m.status}
   ).then(({ data: {text} } ) => {
-    result.textContent =text
+    result.removeAttribute("hidden");
+    result.value =text
+
   })
+    //copyBtn.removeClass("disabled");
+
 /*
 
   const { createWorker, createScheduler } = Tesseract//require('tesseract.js');
@@ -204,3 +268,19 @@ function recog(img) {
   })();
 */
 }
+// Can also be used for toasts
+function errAlert(msg, gfg) {
+  var confirmBox = $("#alert");
+    
+  /* Trace message to display */
+  confirmBox.find(".message").text(msg);
+    
+  /* Calling function */
+  confirmBox.find(".yes").unbind().click(function() 
+  {
+     confirmBox.hide();
+  });
+  confirmBox.find(".yes").click(gfg);
+  confirmBox.show();
+}
+
