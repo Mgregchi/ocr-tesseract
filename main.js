@@ -25,11 +25,11 @@ function begin(a) {
   takePic.removeClass("disabled");
   resetbutton.removeClass("disabled");
   if(hid === true) video.removeAttribute("hidden");// Skip hidden elements  
-  let constraints = {video:true/*{
+  let constraints = {video:{
     facingMode: {
       exact: "environment"
-    }
-  }*/};
+    }}
+ };
 
   notify.innerHTML = "";
   //resetbutton = document.getElementById("resetbutton");
