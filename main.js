@@ -18,7 +18,7 @@ var resetbutton = null;
 //var playing = true;
 state = {"mode":begin, "bool": false};
 var streaming = false;
-var constrain = {video: true,
+var constrain = {video:
   facingMode: {
     exact: "environment"
   }
